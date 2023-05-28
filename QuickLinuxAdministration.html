@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tariq Mahmood - Quick Linux Administration Training</title>
+</head>
+<body>
+  <h1>Tariq Mahmood - Quick Linux Administration Training</h1>
+  <pre>
+    Quick Linux Administration
+    ######################################################################
+    Q1: Create Users and Groups Accordingly
+    ###############################################################
+    A group named sharegroup
+    A user natasha who belongs to sharegroup as a secondary group.
+    A user harry who also belongs to sharegroup as a secondary group.
+    A user sarah who does not have access to an interactive shell on the system and who is not a member of sharegroup.
+    Password for all users must be fatcatnotrat
+
+    Creating group sharegroup
+
+    groupadd sharegroup
+    tail /etc/group
+
+    Create user natasha as required and set the password
+
+    useradd --create-home -s /bin/bash -G sharegroup natasha
+    tail /etc/passwd
+    id natasha
+    passwd natasha
+
+    Create user harry as required and set the password
+    useradd --create-home -s /bin/bash -G sharegroup harry
+    tail /etc/passwd
+    id harry
+    passwd harry
+
+    Create user sarah as required and set the password
+    useradd --create-home -s /usr/sbin/nologin sarah
+    tail /etc/passwd
+    id sarah
+    passwd sarah
+    su -l sarah
+    passwd sarah
+
+    ######################################################################
+    Q2: Create a collaborative directory /home/shared
+
+    The directory should be readable, writable, and accessible to members of sharegroup but not to any other user (it is understood root must have full access).
+    Files created in /home/shared automatically have group ownership set to the sharegroup group.
+    ######################################################################
+
+    Creating shared directory
+
+    mkdir /home/shared -v
+
+    Setting up ownership
+
+    chown :sharegroup /home/shared -v
+
+    ls -ld /home/shared
+
+    Setting up SGID
+
+    chmod 2770 /home/shared -v
+
+    Testing
+
+    su -l harry
+
+    cd /home/shared/
+
+    mkdir harry-data
+
+    ls -l
+
+    ######################################################################
+    Q3: Create a user fenix with userid 4444. The password fatcatnotrat
+    ######################################################################
+
+    Creating user with userid and setting up password
+
+    useradd -u 4444 --create-home -s /bin/bash fenix
+    tail /etc/passwd
+    id fenix
+    passwd fenix
+
+    ######################################################################
+    Q4: Setup IP Configuration on server
+    ######################################################################
+
+    IP Configuration
+    Hostname: system1.example.com
+    IP address: 192.168.122.10
+    Netmask: 255.255.255.0
+    Gateway: 192.168.122.1
+    Name Server: 192.168.122.1
+
+    ######################################################################
+
+    Getting example configuration from netplan manual page
+
+    man netplan
+
+    Listing IP and interface information using ip
+
+    ip a s
+
+    Editing YAML file to make required changes
+
+    vim /etc/netplan/00-installer-config.yaml
+    network:
+      ethernets:
+        ens3:
+          dhcp4: no
+          addresses: [192.168.122.10/24]
+          gateway4: 192.168.122.1
+          nameservers:
+            addresses: [192.168.122.1]
+      version: 2
+
+    Applying netplan configuration
+
+    netplan apply
+
+    Checking for configuration success
+
+    ip a | grep ens3
+
+    Changing hostname as per requirement
+
+    hostnamectl set-hostname system1.example.com
+  </pre>
+</body>
+</html>
